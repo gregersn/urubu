@@ -205,9 +205,9 @@ class Project(object):
             self.validators[layout](info)
         # a validator may add/modify attributes
         layout = info['layout']
-        if layout is None:
-            return
-        if layout not in self.layouts:
+        # if layout is None:
+        #     return
+        if layout is not None and layout not in self.layouts:
             self.layouts.append(layout)
         # title
         if 'title' not in info:
@@ -337,8 +337,8 @@ class Project(object):
             itemcomps = item['components']
             if len(itemcomps) == len(navcomps) + 1 and \
                itemcomps[:-1] == navcomps and \
-               itemcomps[-1] != 'index' and \
-               item['layout'] is not None:
+               itemcomps[-1] != 'index':  #  and \
+               # item['layout'] is not None:
                 if key not in item:
                     raise UrubuError(_error.undef_key, msg=key, fn=item['fn'])
                 return True
