@@ -18,8 +18,8 @@
 from urubu._compat import httpserver
 
 class AliasingHTTPRequestHandler(httpserver.SimpleHTTPRequestHandler):
-    def __init__(self):
-        super(self.__class__, self).__init__()
+    def __init__(self, request, client_address, server):
+        super(self.__class__, self).__init__(request, client_address, server)
 
     def do_GET(self):
         baseurl = self.server.baseurl
