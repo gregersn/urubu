@@ -27,6 +27,7 @@ from urubu import project
 from urubu._compat import socketserver, httpserver
 from urubu.httphandler import AliasingHTTPRequestHandler
 
+
 def serve(baseurl, host='localhost', port=8000):
     """HTTP server straight from the docs."""
     # allow running this from the top level
@@ -39,19 +40,32 @@ def serve(baseurl, host='localhost', port=8000):
     httpd.baseurl = baseurl
 
     print("Serving {} at port {}".format(host, port))
-    if httpd.baseurl: print("Using baseurl {}".format(httpd.baseurl))
+    if httpd.baseurl:
+        print("Using baseurl {}".format(httpd.baseurl))
     httpd.serve_forever()
+
+
+def watch(baseurl, host='localhost', port=8000):
+    print('start watch thread')
+    serve(baseurl, host=host, port=port)
+    print('Done serving')
+
 
 def main():
     parser = argparse.ArgumentParser(prog='python -m urubu')
     parser.add_argument('--version', action='version', version=__version__)
-    parser.add_argument('command', choices=['build', 'serve', 'serveany'])
+    parser.add_argument('command', choices=['build',
+                                            'serve', 'serveany',
+                                            'watch'])
     args = parser.parse_args()
     if args.command == 'build':
         project.build()
     elif args.command == 'serve':
         proj = project.load()
         serve(proj.site['baseurl'])
+    elif args.command == 'watch':
+        proj = project.load()
+        watch(proj.site['baseurl'])
     elif args.command == 'serveany':
         proj = project.load()
         serve(proj.site['baseurl'], host='')
