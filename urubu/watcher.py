@@ -18,11 +18,33 @@
 
 from __future__ import print_function
 
+import os
 import sys
 import time
 import logging
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
+from watchdog.events import FileSystemEventHandler
+
+
+class UrubuHandler(FileSystemEventHandler):
+    def __init__(self, callback, arguments):
+        self.lastbuild = time.time()
+        self.callback = callback
+        self.arguments = arguments
+
+    def on_any_event(self, event):
+        eventpath = os.path.normpath(event.src_path)
+
+        if eventpath.startswith('_build'):
+            return
+
+        print(event)
+
+        if time.time() - self.lastbuild > 2:
+            print("Building...")
+            self.callback()
+            self.lastbuild = time.time()
 
 
 def watch(folder, callback, arguments):
@@ -30,16 +52,17 @@ def watch(folder, callback, arguments):
                         format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
 
-    event_handler = LoggingEventHandler()
+    event_handler = UrubuHandler(callback, arguments)
     observer = Observer()
     observer.schedule(event_handler, folder, recursive=True)
     observer.start()
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt():
-        observer.stop()
-    observer.join()
+    # try:
+    #     while True:
+    #         time.sleep(1)
+    # except KeyboardInterrupt():
+    #     observer.stop()
+    # observer.join()
+    return observer
 
 
 def main():

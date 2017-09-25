@@ -27,6 +27,8 @@ from urubu import project
 from urubu._compat import socketserver, httpserver
 from urubu.httphandler import AliasingHTTPRequestHandler
 
+from urubu import watcher
+
 
 def serve(baseurl, host='localhost', port=8000):
     """HTTP server straight from the docs."""
@@ -47,8 +49,13 @@ def serve(baseurl, host='localhost', port=8000):
 
 def watch(baseurl, host='localhost', port=8000):
     print('start watch thread')
-    serve(baseurl, host=host, port=port)
-    print('Done serving')
+    observer = watcher.watch('.', project.build, None)
+    try:
+        serve(baseurl, host=host, port=port)
+    except KeyboardInterrupt:
+        print('Done serving')
+        observer.stop()
+        observer.join()
 
 
 def main():
