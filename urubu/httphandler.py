@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from urubu._compat import httpserver
 
 class AliasingHTTPRequestHandler(httpserver.SimpleHTTPRequestHandler):
@@ -60,3 +61,9 @@ class AliasingHTTPRequestHandler(httpserver.SimpleHTTPRequestHandler):
             self.send_header('Location', "/%s%s%s" % (baseurl, sep, self.path))
             self.end_headers()
             return
+
+    def translate_path(self, path):
+        path = super(self.__class__, self).translate_path(path)
+        relpath = os.path.relpath(path, os.getcwd())
+        fullpath = os.path.join(self.server.base_path, relpath)
+        return fullpath

@@ -30,20 +30,29 @@ from urubu.httphandler import AliasingHTTPRequestHandler
 from urubu import watcher
 
 
+class UrubuServer(socketserver.TCPServer):
+    def __init__(self, base_path, server_address, handler):
+        self.base_path = base_path
+        super(self.__class__, self).__init__(server_address, handler)
+
+
 def serve(baseurl, host='localhost', port=8000):
     """HTTP server straight from the docs."""
     # allow running this from the top level
+    servedir = '.'
     if os.path.isdir('_build'):
-        os.chdir('_build')
+        servedir = '_build'
+
     # local use, address reuse should be OK
-    socketserver.TCPServer.allow_reuse_address = True
+    UrubuServer.allow_reuse_address = True
     handler = AliasingHTTPRequestHandler
-    httpd = socketserver.TCPServer((host, port), handler)
+    httpd = UrubuServer(servedir, (host, port), handler)
     httpd.baseurl = baseurl
 
     print("Serving {} at port {}".format(host, port))
     if httpd.baseurl:
         print("Using baseurl {}".format(httpd.baseurl))
+
     httpd.serve_forever()
 
 
