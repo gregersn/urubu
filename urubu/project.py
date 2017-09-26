@@ -103,6 +103,7 @@ class Project(object):
         self.validators = getattr(_python, 'validators', {})
         # overwrite placeholder method if function found
         self.process_info = getattr(_python, 'process_info', self.process_info)
+        self.post_process = getattr(_python, 'post_process', self.post_process)
 
         self.filelist = []
         self.navlist = []
@@ -113,6 +114,10 @@ class Project(object):
         self.anchors = set()
 
     def process_info(self, info, site):
+        """Plugin placeholder"""
+        pass
+
+    def post_process(self):
         """Plugin placeholder"""
         pass
 
@@ -499,3 +504,4 @@ def build():
     proj.make_pager()
     proj.process_tags()
     proj.make_site()
+    proj.post_process()
