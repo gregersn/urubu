@@ -10,11 +10,19 @@
     :copyright: Copyright 2013 by the Jinja team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+
 import sys
 
 PY2 = sys.version_info[0] == 2
 PYPY = hasattr(sys, 'pypy_translation_info')
-_identity = lambda x: x
+
+
+def _identity(x):
+    return x
 
 
 if not PY2:
@@ -24,9 +32,14 @@ if not PY2:
     string_types = (str,)
     integer_types = (int,)
 
-    iterkeys = lambda d: iter(d.keys())
-    itervalues = lambda d: iter(d.values())
-    iteritems = lambda d: iter(d.items())
+    def iterkeys(d):
+        return iter(d.keys())
+
+    def itervalues(d):
+        return iter(d.values())
+
+    def iteritems(d):
+        return iter(d.items())
 
     ifilter = filter
     imap = map
@@ -38,18 +51,22 @@ if not PY2:
 
 else:
     unichr = unichr
-    text_type = unicode
-    range_type = xrange
-    string_types = (str, unicode)
-    integer_types = (int, long)
+    text_type = unicode  # noqa
+    range_type = xrange  # noqa
+    string_types = (str, unicode)  # noqa
+    integer_types = (int, long)  # noqa
 
-    iterkeys = lambda d: d.iterkeys()
-    itervalues = lambda d: d.itervalues()
-    iteritems = lambda d: d.iteritems()
+    def iterkeys(d):
+        return d.iterkeys()
 
-    from itertools import imap, izip, ifilter
+    def itervalues(d):
+        return d.itervalues()
+
+    def iteritems(d):
+        return d.iteritems()
+
+    from itertools import imap, izip, ifilter  # noqa
     intern = intern
 
-    import SocketServer as socketserver
-    import SimpleHTTPServer as httpserver
-
+    import SocketServer as socketserver  # noqa
+    import SimpleHTTPServer as httpserver  # noqa

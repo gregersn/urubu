@@ -15,7 +15,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from __future__ import print_function
+from __future__ import division
 
 import argparse
 
@@ -24,7 +27,7 @@ import os
 from urubu import __version__
 from urubu import project
 
-from urubu._compat import socketserver, httpserver
+from urubu._compat import socketserver  # , httpserver
 from urubu.httphandler import AliasingHTTPRequestHandler
 
 from urubu import watcher

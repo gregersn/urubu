@@ -16,9 +16,12 @@
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
 
 # Python 3 idioms
+from __future__ import absolute_import
 from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
 
-import os
+# import os
 
 siteinfofn = '_site.yml'
 sitedir = '_build'

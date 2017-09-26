@@ -14,9 +14,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
 
 import os
 from urubu._compat import httpserver
+
 
 class AliasingHTTPRequestHandler(httpserver.SimpleHTTPRequestHandler):
     def __init__(self, request, client_address, server):
@@ -42,7 +47,7 @@ class AliasingHTTPRequestHandler(httpserver.SimpleHTTPRequestHandler):
         if self.path[:len(wk_baseurl)] == wk_baseurl:
             # translate /$baseurl/path internally to /path and serve
 
-            self.path = self.path[len(wk_baseurl)-1:]
+            self.path = self.path[len(wk_baseurl) - 1:]
             httpserver.SimpleHTTPRequestHandler.do_GET(self)
             return
         else:

@@ -16,22 +16,27 @@
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
 
 # Python 3 idioms
+from __future__ import absolute_import
 from __future__ import unicode_literals
-from io import open
+from __future__ import print_function
+from __future__ import division
+
+# from io import open
 
 import posixpath
 
-import markdown
+# import markdown
 import logging
-logging.captureWarnings(False)
+logging.captureWarnings(False)  # noqa
 
 from markdown import Extension
-from markdown.extensions import toc 
+from markdown.extensions import toc
 from markdown.treeprocessors import Treeprocessor
-from markdown.inlinepatterns import ReferencePattern, REFERENCE_RE, SHORT_REF_RE
+from markdown.inlinepatterns import ReferencePattern
+from markdown.inlinePatterns import REFERENCE_RE, SHORT_REF_RE
 from markdown.inlinepatterns import SimpleTagPattern, SMART_EMPHASIS_RE
 
-from urubu import UrubuWarning, urubu_warn, UrubuError, _warning, _error
+from urubu import urubu_warn, UrubuError, _warning, _error
 
 
 def _set_dl_class(tree):
@@ -49,8 +54,8 @@ class DLClass(Treeprocessor):
 
 
 class DLClassExtension(Extension):
-
-    """Add 'dl-horizontal' class to definition list elements (for bootstrap)."""
+    """Add 'dl-horizontal' class to definition list elements"""
+    """(for bootstrap)."""
 
     def extendMarkdown(self, md, md_globals):
         md.treeprocessors.add('dlclass', DLClass(md), "_end")
@@ -107,7 +112,7 @@ class ProjectReferencePattern(ReferencePattern):
             this = self.markdown.this
             if not posixpath.isabs(ref):
                 # treat empty ref as reference to current page
-                if not ref: 
+                if not ref:
                     ref = this['components'][-1]
                 rootrelpath = '/' + '/'.join(this['components'][:-1])
                 id = posixpath.normpath(posixpath.join(rootrelpath, ref))
@@ -117,7 +122,8 @@ class ProjectReferencePattern(ReferencePattern):
             ref = ref.lower()
             if ref in self.markdown.site['reflinks']:
                 if (ref != id) and (id in self.markdown.site['reflinks']):
-                    raise UrubuError(_error.ambig_ref_md, msg=ref, fn=this['fn'])
+                    raise UrubuError(_error.ambig_ref_md,
+                                     msg=ref, fn=this['fn'])
                 id = ref
             if id in self.markdown.site['reflinks']:
                 item = self.markdown.site['reflinks'][id]
@@ -157,25 +163,26 @@ class ExtractAnchorsClass(Treeprocessor):
         components = this['components']
         for item in tree:
             if 'id' in item.attrib:
-                self.markdown.anchors.add("%s#%s" % (thisid, item.attrib['id']))
+                self.markdown.anchors.add("%s#%s" % (thisid,
+                                                     item.attrib['id']))
                 # add special version for index files
                 if components[-1] == 'index':
-                    navid = thisid[:-6] # remove trailing backslash also
-                    self.markdown.anchors.add("%s#%s" % (navid, item.attrib['id']))
+                    navid = thisid[:-6]  # remove trailing backslash also
+                    self.markdown.anchors.add("%s#%s" % (navid,
+                                                         item.attrib['id']))
         return None
 
 
 class ExtractAnchorsExtension(Extension):
 
     def extendMarkdown(self, md, md_globals):
-        md.treeprocessors.add('extractanchors', ExtractAnchorsClass(md), "_end")
+        md.treeprocessors.add('extractanchors',
+                              ExtractAnchorsClass(md), "_end")
 
 
 # extension for the <mark> tag
 class MarkTagExtension(Extension):
     def extendMarkdown(self, md, md_globals):
         # emphasis2 is the one with underscores, use the smart version
-        md.inlinePatterns['emphasis2'] = SimpleTagPattern(SMART_EMPHASIS_RE, 'mark')
-
-
-
+        md.inlinePatterns['emphasis2'] = SimpleTagPattern(SMART_EMPHASIS_RE,
+                                                          'mark')

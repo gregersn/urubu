@@ -15,12 +15,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+
 __version__ = "1.3.0"
 
 from warnings import warn
 
+
 class UrubuWarning(UserWarning):
     pass
+
 
 def urubu_warn(kind, msg='', fn=''):
     if fn:
@@ -34,9 +41,10 @@ class UrubuError(Exception):
     def __init__(self, kind, msg='', fn=''):
         self.kind = kind
         self.msg = msg
-        self.fn = fn 
+        self.fn = fn
+
     def __str__(self):
-        fn = self.fn 
+        fn = self.fn
         if fn:
             fn = 'in ' + fn + ': '
         msg = self.msg
@@ -44,11 +52,14 @@ class UrubuError(Exception):
             msg = ': ' + "'{}'".format(msg)
         return fn + self.kind + msg
 
+
 class _error():
     pass
 
+
 class _warning():
     pass
+
 
 _warning.no_yamlfm = "No yaml front matter - ignored"
 _warning.undef_tag_layout = "Tags defined, but no tag layout found"
@@ -63,5 +74,5 @@ _error.date_format = "Date format error - should be YYYY-MM-DD"
 _error.undef_key = "Undefined key"
 _error.undef_content = "No 'content' or 'order' specified"
 _error.undef_reflink_key = "Undefined key in site reflink"
-_error.ambig_ref_md = 'Ambiguous reference' 
+_error.ambig_ref_md = 'Ambiguous reference'
 _error.no_index = 'Missing index file'

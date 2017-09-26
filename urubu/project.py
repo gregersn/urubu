@@ -16,7 +16,11 @@
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
 
 # Python 3 idioms
+from __future__ import absolute_import
 from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+
 from io import open
 
 import os
@@ -25,15 +29,16 @@ import fnmatch
 import shutil
 import datetime
 import itertools
-from operator import itemgetter
+# from operator import itemgetter
 
 from urubu._compat import ifilter
 
-from urubu import UrubuWarning, UrubuError, urubu_warn, _warning, _error
+from urubu import UrubuError, urubu_warn, _warning, _error
 from urubu import readers, processors
 
 from urubu.config import (siteinfofn, sitedir,
                           tagdir, tagid, tagindexid, tag_layout)
+
 
 def require_key(key, mapping, tipe, fn):
     type_error = "{}: '{}' value should be of type {}"
@@ -56,6 +61,7 @@ def get_components(path, hasext=True):
     if p:
         components = p.split(os.sep)
     return components
+
 
 def make_id(components, lowercased=True):
     id = ('/' + '/'.join(components))
@@ -127,9 +133,11 @@ class Project(object):
 
     def validate_sitereflink(self, id, info):
         if 'title' not in info:
-            raise UrubuError(_error.undef_reflink_key, fn=id, msg=id + ': title')
+            raise UrubuError(_error.undef_reflink_key,
+                             fn=id, msg=id + ': title')
         if 'url' not in info:
-            raise UrubuError(_error.undef_reflink_key, fn='_site.yml', msg=id + ': url')
+            raise UrubuError(_error.undef_reflink_key,
+                             fn='_site.yml', msg=id + ': url')
 
     def add_reflink(self, id, info):
         """Add a valid reflink to the site reflinks."""
@@ -143,7 +151,6 @@ class Project(object):
         if self.site['baseurl']:
             url = '/' + self.site['baseurl'] + url
         return url
-
 
     def get_contentinfo(self):
         """Get info from the markdown content files."""
@@ -160,7 +167,8 @@ class Project(object):
                     # normalize to convert ./foo into foo
                     # to avoid problems with ignore_patterns matching
                     relfn = os.path.normpath(os.path.join(relpath, fn))
-                    if any(fnmatch.fnmatch(relfn, ip) for ip in ignore_patterns):
+                    if any(fnmatch.fnmatch(relfn, ip)
+                           for ip in ignore_patterns):
                         continue
                     meta = readers.get_yamlfm(relfn)
                     if meta is None:
@@ -220,7 +228,7 @@ class Project(object):
         # date
         if 'date' in info:
             if not isinstance(info['date'], datetime.date):
-               raise UrubuError(_error.date_format, fn=fn)
+                raise UrubuError(_error.date_format, fn=fn)
         # tags
         if 'tags' in info:
             # TODO: make sure it's a list of strings
@@ -312,7 +320,7 @@ class Project(object):
             if (ref != id) and (id in reflinks):
                 raise UrubuError(_error.ambig_ref, msg=ref, fn=indexfn)
             id = ref
-        elif not id in reflinks:
+        elif id not in reflinks:
             raise UrubuError(_error.undef_ref, msg=ref, fn=indexfn)
         return reflinks[id]
 
@@ -328,7 +336,7 @@ class Project(object):
 
     def get_content(self, info):
         """Infer sorted content of a folder."""
-        reflinks = self.site['reflinks']
+        # reflinks = self.site['reflinks']
         refcontent = []
         key = info['order']
         reverse = info.get('reverse', False)
@@ -338,8 +346,8 @@ class Project(object):
             itemcomps = item['components']
             if len(itemcomps) == len(navcomps) + 1 and \
                itemcomps[:-1] == navcomps and \
-               itemcomps[-1] != 'index':  #  and \
-               # item['layout'] is not None:
+               itemcomps[-1] != 'index':  # and \
+                # item['layout'] is not None:
                 if key not in item:
                     raise UrubuError(_error.undef_key, msg=key, fn=item['fn'])
                 return True
@@ -433,8 +441,8 @@ class Project(object):
     def check_anchor_links(self):
         for info in self.filelist:
             for ar in info['_anchorrefs']:
-                if not ar in self.anchors:
-                    urubu_warn(_warning.undef_anchor, msg=ar, fn=info['id'] )
+                if ar not in self.anchors:
+                    urubu_warn(_warning.undef_anchor, msg=ar, fn=info['id'])
 
     def make_site(self):
         """Make the site."""
@@ -445,6 +453,7 @@ class Project(object):
         ignore_patterns = self.get_ignore_patterns() + ('*.md',)
         ignore = shutil.ignore_patterns(*ignore_patterns)
         for fn in os.listdir(self.cwd):
+            print(fn)
             if any(fnmatch.fnmatch(fn, ip) for ip in ignore_patterns):
                 continue
             wp = os.path.join(self.cwd, fn)
@@ -476,9 +485,11 @@ class Project(object):
         p = processors.ContentProcessor(sitedir, project=self)
         p.process()
 
+
 def load():
     proj = Project()
     return proj
+
 
 def build():
     proj = load()

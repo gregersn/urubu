@@ -16,11 +16,15 @@
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
 
 # Python 3 idioms
+from __future__ import absolute_import
 from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+
 from io import open
 
 import yaml
-import re
+
 
 def get_yamlfm(fn):
     """Return the yaml frontmatter."""
@@ -47,5 +51,3 @@ def _get_yamlfm_helper(fn):
                     return None
             else:
                 lines.append(line)
-
-

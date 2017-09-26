@@ -16,22 +16,32 @@
 # along with Urubu.  If not, see <http://www.gnu.org/licenses/>.
 
 # Python 3 idioms
+from __future__ import absolute_import
 from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+
 from io import open
-import os, sys, json, itertools
+import os
+import sys
+import json
+import itertools
 
 import markdown
 import logging
-logging.captureWarnings(False)
+logging.captureWarnings(False)  # noqa
+
 from bs4 import BeautifulSoup
 
 import jinja2
 
-from urubu import UrubuWarning, UrubuError, urubu_warn, _warning
+from urubu import UrubuError, urubu_warn, _warning
 from urubu import md_extensions
 
-from urubu.config import layoutdir, tag_layout, tipuesearchdir, tipuesearch_content
+from urubu.config import layoutdir, tag_layout
+from urubu.config import tipuesearchdir, tipuesearch_content
 from urubu._compat import text_type
+
 
 def skip_yamlfm(f):
     """Return source of a file without yaml frontmatter."""
@@ -59,15 +69,21 @@ class ContentProcessor(object):
         projectref = md_extensions.ProjectReferenceExtension()
         extractanchors = md_extensions.ExtractAnchorsExtension()
         marktag = md_extensions.MarkTagExtension()
-        # there is a strange interaction between smarty and reference links that start on a new line
+        # there is a strange interaction between smarty and reference links
+        # that start on a new line
         # disabling smarty for now...
-        # extensions = ['extra', 'codehilite', 'headerid', 'toc', 'smarty', tableclass, projectref]
-        extensions = ['markdown.extensions.extra', 'markdown.extensions.codehilite', 'markdown.extensions.toc',
+        # extensions = ['extra', 'codehilite', 'headerid',
+        #               'toc', 'smarty', tableclass, projectref]
+        extensions = ['markdown.extensions.extra',
+                      'markdown.extensions.codehilite',
+                      'markdown.extensions.toc',
                       dlclass, tableclass, projectref, extractanchors]
         if self.site['mark_tag_support']:
             extensions.append(marktag)
-        extension_configs = {'markdown.extensions.codehilite': [('guess_lang', 'False'),
-                                                                ('linenums', 'False')],
+        extension_configs = {'markdown.extensions.codehilite': [('guess_lang',
+                                                                 'False'),
+                                                                ('linenums',
+                                                                 'False')],
                              'markdown.extensions.toc': [('baselevel', 2)]
                              }
         self.md = markdown.Markdown(extensions=extensions,
@@ -115,7 +131,7 @@ class ContentProcessor(object):
             try:
                 templ = self.env.from_string(src)
                 src = templ.render(this=info, site=self.site)
-            except:
+            except UrubuError:  # Avoiding bare exception catching.
                 exc, msg, tb = sys.exc_info()
                 raise UrubuError(str(exc), msg=msg, fn=fn)
             self.md.toc = ''
@@ -186,23 +202,24 @@ class ContentProcessor(object):
         # use tag index files if they have been rendered
         taglist = []
         if tag_layout in self.templates:
-           taglist = self.taglist
+            taglist = self.taglist
         for info in itertools.chain(self.filelist, taglist):
             if 'text' not in info:
                 return
             tags = ""
             if 'tags' in info:
-               tags = ' '.join(info['tags'])
-            item = {'text' : info['text'],
+                tags = ' '.join(info['tags'])
+            item = {'text': info['text'],
                     'title': info['title'],
-                    'url'  : info['url'],
-                    'tags' : tags}
+                    'url': info['url'],
+                    'tags': tags}
             items.append(item)
         obj = {'pages': items}
         with open(tsc, 'w', encoding='utf-8') as fd:
             # json.dump is buggy in Python2 -- use workaround
             # print json.dumps(obj, ensure_ascii=False, indent=4)
-            data = json.dumps(obj, fd, ensure_ascii=False, indent=4, sort_keys=True)
+            data = json.dumps(obj,
+                              ensure_ascii=False,
+                              indent=4,
+                              sort_keys=True)
             fd.write(text_type(data))
-
-
