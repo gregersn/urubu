@@ -33,7 +33,7 @@ from markdown import Extension
 from markdown.extensions import toc
 from markdown.treeprocessors import Treeprocessor
 from markdown.inlinepatterns import ReferencePattern
-from markdown.inlinePatterns import REFERENCE_RE, SHORT_REF_RE
+from markdown.inlinepatterns import REFERENCE_RE, SHORT_REF_RE
 from markdown.inlinepatterns import SimpleTagPattern, SMART_EMPHASIS_RE
 
 from urubu import urubu_warn, UrubuError, _warning, _error
